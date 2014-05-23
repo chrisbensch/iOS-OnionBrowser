@@ -9,24 +9,24 @@ of the source code of Onion Browser.
 ###########################################################################
 NOTICE
 
-Mike Tigas and OnionBrowser are not affiliated with nor endorsed by the Tor
-Project. Onion Browser carries no guarantee from The Tor Project about quality,
+Chris Bensch and negi are not affiliated with nor endorsed by the Tor
+Project. negi carries no guarantee from The Tor Project about quality,
 suitability or anything else. ("Tor" is a registered trademark of The Tor
 Project, Inc.)
 
 ###########################################################################
 TRADEMARK / LICENSE / FORK INFORMATION
 
-"Onion Browser" is a trademark of Mike Tigas.
-Forks of this project MUST NOT be named "Onion Browser" when publicly
+"negi" is a trademark of Chris Bensch.
+Forks of this project MUST NOT be named "negi" when publicly
 distributing binary forms of the application.
 
-The "Onion Browser" icon is a trademark of Mike Tigas.
-Forks SHOULD NOT use the "Onion Browser" icon when distributing binary forms
+The "negi" icon is a trademark of Chris Bensch.
+Forks SHOULD NOT use the "negi" icon when distributing binary forms
 of the application. Reuse subject to the Creative Commons CC-BY-SA 3.0
 license (see ICON & PHOTO LICENSES below).
 
-Forks of this project MUST republish the ONION BROWSER LICENSE (below) without
+Forks of this project MUST republish the NEGI LICENSE (below) without
 modification. Forks MUST republish THIRD PARTY LICENSES (below), as necessary
 to the terms of each third party license.
 
@@ -34,13 +34,12 @@ Forks MAY be redistributed with new license terms (MIT License "sublicense"
 clause), provided the terms of the new license are compatible with the terms
 of the ONION BROWSER LICENSE and THIRD PARTY LICENSES below.
 
-Forks of this project SHOULD link to the original Onion Browser source code
-at https://github.com/mtigas/iOS-OnionBrowser or otherwise provide for access
-to source code for the fork.
+Forks of this project SHOULD link to the original negi source code
+or otherwise provide for access to source code for the fork.
 
 Licenses and permissions outside the scope of above terms and below
-license may be possible via negotiation with the author. Please contact Mike
-Tigas: https://mike.tig.as/about/#contact
+license may be possible via negotiation with the author. Please contact
+Chris Bensch: <chris.bensch@gmail.com>
 
 ###########################################################################
 ONION BROWSER LICENSE
@@ -90,37 +89,6 @@ FAQs[3] site. Also note the "I intend to distribute my app only in the United
 States and Canada..." question on that FAQ page.)
 
     [3]: https://itunesconnect.apple.com/WebObjects/iTunesConnect.woa/wa/jumpTo?page=faqs
-
-###########################################################################
-ICON & PHOTO LICENSES
-
-The "Onion Browser" icon is a trademark of Mike Tigas. Icon image[1] under
-the Creative Commons CC-BY-SA 3.0 license[2].
-
-    [1] https://github.com/mtigas/iOS-OnionBrowser/tree/master/OnionBrowser/icon
-    [2] https://creativecommons.org/licenses/by-sa/3.0/
-
-"ONION BROWSER" ICON DERIVED FROM THE FOLLOWING WORKS
-
-"Compass - Baltimore National Aquarium" by voobie
-    https://secure.flickr.com/photos/84421355@N00/4468611274/
-    Photo under the Creative Commons CC-BY-SA 2.0 License
-    https://creativecommons.org/licenses/by-sa/2.0/
-
-"black leather texture" by kitkatscrapper
-    https://secure.flickr.com/photos/kitkatscrapper/6484685303/
-    Photo under the Creative Commons CC-BY 2.0 License
-    https://creativecommons.org/licenses/by/2.0/
-
-"Webtreats Tileable Metal Textures 4-1024px" by webtreats
-    https://secure.flickr.com/photos/webtreatsetc/4724731217/
-    Photo under the Creative Commons CC-BY 2.0 License
-    https://creativecommons.org/licenses/by/2.0/
-
-"free concrete texture, seamless libeskind judische museum" by seier+seier
-    https://secure.flickr.com/photos/seier/4338268272/
-    Photo under the Creative Commons CC-BY 2.0 License
-    https://creativecommons.org/licenses/by/2.0/
 
 ###########################################################################
 THIRD PARTY LICENSES
