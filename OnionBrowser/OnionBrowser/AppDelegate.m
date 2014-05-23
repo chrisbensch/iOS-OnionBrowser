@@ -192,7 +192,7 @@
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     appWebView.view.hidden = YES;
-    NSURL *imgurl = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"../OnionBrowser.app/Default-7-Portrait@2x.png"];
+    NSURL *imgurl = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"../negi.app/Default-7-Portrait@2x.png"];
     if (windowOverlay == nil) {
         windowOverlay = [[UIImageView alloc] initWithImage:[UIImage imageWithContentsOfFile:[imgurl path]]];
     }
@@ -249,17 +249,17 @@
     #endif
 
     NSString *bundleIdentifier = [[NSBundle mainBundle] bundleIdentifier];
-    BOOL appIsOnionBrowser = [bundleIdentifier isEqualToString:@"com.miketigas.OnionBrowser"];
+    BOOL appIsOnionBrowser = [bundleIdentifier isEqualToString:@"com.chrisbensch.negi"];
     BOOL srcIsOnionBrowser = (appIsOnionBrowser && [sourceApplication isEqualToString:bundleIdentifier]);
 
-    if (appIsOnionBrowser && [urlStr hasPrefix:@"onionbrowser:/"]) {
+    if (appIsOnionBrowser && [urlStr hasPrefix:@"negi:/"]) {
         // HTTP
         urlStr = [urlStr stringByReplacingCharactersInRange:NSMakeRange(0, 14) withString:@"http:/"];
         #ifdef DEBUG
             NSLog(@" -> %@", urlStr);
         #endif
         newUrl = [NSURL URLWithString:urlStr];
-    } else if (appIsOnionBrowser && [urlStr hasPrefix:@"onionbrowsers:/"]) {
+    } else if (appIsOnionBrowser && [urlStr hasPrefix:@"negis:/"]) {
         // HTTPS
         urlStr = [urlStr stringByReplacingCharactersInRange:NSMakeRange(0, 15) withString:@"https:/"];
         #ifdef DEBUG
@@ -432,7 +432,7 @@
     // from a blank slate.)
     Boolean update = NO;
     if ([d objectForKey:@"homepage"] == nil) {
-        [d setObject:@"onionbrowser:home" forKey:@"homepage"]; // DEFAULT HOMEPAGE
+        [d setObject:@"negi:home" forKey:@"homepage"]; // DEFAULT HOMEPAGE
         update = YES;
     }
     if ([d objectForKey:@"cookies"] == nil) {

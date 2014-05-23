@@ -152,7 +152,6 @@
 		6963E61415FAB2EC00310E8D /* BookmarkTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BookmarkTableViewController.h; sourceTree = "<group>"; };
 		6963E61515FAB2EC00310E8D /* BookmarkTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BookmarkTableViewController.m; sourceTree = "<group>"; };
 		696C33AD1530D0D400990E69 /* startup.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = startup.html; sourceTree = "<group>"; };
-		696EBD7314F7877900B81BC9 /* OnionBrowser.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OnionBrowser.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		696EBD7714F7877900B81BC9 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		696EBD7914F7877900B81BC9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		696EBD7B14F7877900B81BC9 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -169,7 +168,6 @@
 		696F9EB214F8DD6D00BC5FDC /* ULINetSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ULINetSocket.h; sourceTree = "<group>"; };
 		696F9EB314F8DD6D00BC5FDC /* ULINetSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ULINetSocket.m; sourceTree = "<group>"; };
 		696F9EB514F8E21200BC5FDC /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
-		697AB1081866567400A6F3EE /* OnionBrowserTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OnionBrowserTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		697AB1091866567400A6F3EE /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		697AB10F1866567400A6F3EE /* OnionBrowserTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "OnionBrowserTests-Info.plist"; sourceTree = "<group>"; };
 		697AB1111866567400A6F3EE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -210,6 +208,8 @@
 		69F3C5F714FC8739008274C3 /* CKHTTPConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CKHTTPConnection.h; path = ../ConnectionKit/CKHTTPConnection.h; sourceTree = "<group>"; };
 		69F3C5F814FC8739008274C3 /* CKHTTPConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CKHTTPConnection.m; path = ../ConnectionKit/CKHTTPConnection.m; sourceTree = "<group>"; };
 		69F88FCB1500A9D900C7BE98 /* geoip */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = geoip; path = ../dependencies/share/geoip; sourceTree = "<group>"; };
+		A62D80F2192F65560053E7E5 /* negi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = negi.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A62D80F3192F65620053E7E5 /* negiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = negiTests.xctest; path = "/Users/chrisbensch/Development/Projects/negi/bensch/OnionBrowser/build/Debug-iphoneos/negiTests.xctest"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -287,17 +287,8 @@
 				697AB10D1866567400A6F3EE /* OnionBrowserTests */,
 				696EBD7614F7877900B81BC9 /* Frameworks */,
 				69737A9B14FCD20600775275 /* Resources */,
-				696EBD7414F7877900B81BC9 /* Products */,
+				A62D80F4192F66A40053E7E5 /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		696EBD7414F7877900B81BC9 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				696EBD7314F7877900B81BC9 /* OnionBrowser.app */,
-				697AB1081866567400A6F3EE /* OnionBrowserTests.xctest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		696EBD7614F7877900B81BC9 /* Frameworks */ = {
@@ -479,12 +470,20 @@
 			name = Tor;
 			sourceTree = "<group>";
 		};
+		A62D80F4192F66A40053E7E5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A62D80F2192F65560053E7E5 /* negi.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		696EBD7214F7877900B81BC9 /* OnionBrowser */ = {
+		696EBD7214F7877900B81BC9 /* negi */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 696EBD8B14F7877900B81BC9 /* Build configuration list for PBXNativeTarget "OnionBrowser" */;
+			buildConfigurationList = 696EBD8B14F7877900B81BC9 /* Build configuration list for PBXNativeTarget "negi" */;
 			buildPhases = (
 				696EBD6F14F7877900B81BC9 /* Sources */,
 				696EBD7014F7877900B81BC9 /* Frameworks */,
@@ -494,14 +493,14 @@
 			);
 			dependencies = (
 			);
-			name = OnionBrowser;
+			name = negi;
 			productName = OnionBrowser;
-			productReference = 696EBD7314F7877900B81BC9 /* OnionBrowser.app */;
+			productReference = A62D80F2192F65560053E7E5 /* negi.app */;
 			productType = "com.apple.product-type.application";
 		};
-		697AB1071866567400A6F3EE /* OnionBrowserTests */ = {
+		697AB1071866567400A6F3EE /* negiTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 697AB11B1866567400A6F3EE /* Build configuration list for PBXNativeTarget "OnionBrowserTests" */;
+			buildConfigurationList = 697AB11B1866567400A6F3EE /* Build configuration list for PBXNativeTarget "negiTests" */;
 			buildPhases = (
 				697AB1041866567400A6F3EE /* Sources */,
 				697AB1051866567400A6F3EE /* Frameworks */,
@@ -512,9 +511,9 @@
 			dependencies = (
 				697AB1171866567400A6F3EE /* PBXTargetDependency */,
 			);
-			name = OnionBrowserTests;
+			name = negiTests;
 			productName = OnionBrowserTests;
-			productReference = 697AB1081866567400A6F3EE /* OnionBrowserTests.xctest */;
+			productReference = A62D80F3192F65620053E7E5 /* negiTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -526,7 +525,7 @@
 				LastUpgradeCheck = 0510;
 				TargetAttributes = {
 					696EBD7214F7877900B81BC9 = {
-						DevelopmentTeam = 68QUP6KP2C;
+						DevelopmentTeam = HK7785U6TE;
 						SystemCapabilities = {
 							com.apple.DataProtection = {
 								enabled = 1;
@@ -546,12 +545,12 @@
 				en,
 			);
 			mainGroup = 696EBD6814F7877900B81BC9;
-			productRefGroup = 696EBD7414F7877900B81BC9 /* Products */;
+			productRefGroup = 696EBD6814F7877900B81BC9;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				696EBD7214F7877900B81BC9 /* OnionBrowser */,
-				697AB1071866567400A6F3EE /* OnionBrowserTests */,
+				696EBD7214F7877900B81BC9 /* negi */,
+				697AB1071866567400A6F3EE /* negiTests */,
 			);
 		};
 /* End PBXProject section */
@@ -652,7 +651,7 @@
 /* Begin PBXTargetDependency section */
 		697AB1171866567400A6F3EE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 696EBD7214F7877900B81BC9 /* OnionBrowser */;
+			target = 696EBD7214F7877900B81BC9 /* negi */;
 			targetProxy = 697AB1161866567400A6F3EE /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -727,7 +726,7 @@
 					"\"$(SRCROOT)/../dependencies/lib\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "9C636355-8615-4700-9D1F-878E88309599";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = TestBuilds;
@@ -828,7 +827,7 @@
 					"\"$(SRCROOT)/../dependencies/lib\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "9C636355-8615-4700-9D1F-878E88309599";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -846,7 +845,7 @@
 					"\"$(SRCROOT)/../dependencies/lib\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "9C636355-8615-4700-9D1F-878E88309599";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -948,7 +947,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		696EBD8B14F7877900B81BC9 /* Build configuration list for PBXNativeTarget "OnionBrowser" */ = {
+		696EBD8B14F7877900B81BC9 /* Build configuration list for PBXNativeTarget "negi" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				696EBD8C14F7877900B81BC9 /* Debug */,
@@ -958,7 +957,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		697AB11B1866567400A6F3EE /* Build configuration list for PBXNativeTarget "OnionBrowserTests" */ = {
+		697AB11B1866567400A6F3EE /* Build configuration list for PBXNativeTarget "negiTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				697AB1181866567400A6F3EE /* Debug */,
