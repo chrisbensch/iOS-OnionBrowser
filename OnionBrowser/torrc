@@ -39,3 +39,8 @@ DisableDebuggerAttachment 0
 
 # "UseBridges" and "bridge" lines get appended automatically if there
 # are bridges enabled in settings.
+
+Bridge 199.15.254.249:443 9b6b3aa98e1b36210ca336b321057e50bc3f606b
+Bridge 192.36.61.188:5166 01868ea92f7ca13a9960b6b1fb73937ad72d7a45
+Bridge 81.28.133.228:443 8bab206b8dce9e338825d2632e05fd479cc38cb1
+

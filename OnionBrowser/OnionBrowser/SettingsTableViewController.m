@@ -388,10 +388,10 @@
         NSMutableDictionary *settings = appDelegate.getSettings;
         
         if ([[[alertView textFieldAtIndex:0] text] length] == 0) {
-            [settings setValue:@"onionbrowser:home" forKey:@"homepage"]; // DEFAULT HOMEPAGE
+            [settings setValue:@"negi:home" forKey:@"homepage"]; // DEFAULT HOMEPAGE
         } else {
             NSString *h = [[alertView textFieldAtIndex:0] text];
-            if ( (![h hasPrefix:@"http:"]) && (![h hasPrefix:@"https:"]) && (![h hasPrefix:@"onionbrowser:"]) )
+            if ( (![h hasPrefix:@"http:"]) && (![h hasPrefix:@"https:"]) && (![h hasPrefix:@"negi:"]) )
                 h = [NSString stringWithFormat:@"http://%@", h];
             [settings setValue:h forKey:@"homepage"];
         }

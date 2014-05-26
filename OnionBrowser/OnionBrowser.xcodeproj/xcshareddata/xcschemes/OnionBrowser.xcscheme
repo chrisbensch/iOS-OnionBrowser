@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "696EBD7214F7877900B81BC9"
-               BuildableName = "OnionBrowser.app"
+               BuildableName = "negi.app"
                BlueprintName = "negi"
                ReferencedContainer = "container:OnionBrowser.xcodeproj">
             </BuildableReference>
@@ -33,7 +33,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "697AB1071866567400A6F3EE"
-               BuildableName = "OnionBrowserTests.xctest"
+               BuildableName = "negiTests.xctest"
                BlueprintName = "negiTests"
                ReferencedContainer = "container:OnionBrowser.xcodeproj">
             </BuildableReference>
@@ -43,7 +43,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "696EBD7214F7877900B81BC9"
-            BuildableName = "OnionBrowser.app"
+            BuildableName = "negi.app"
             BlueprintName = "negi"
             ReferencedContainer = "container:OnionBrowser.xcodeproj">
          </BuildableReference>
@@ -80,7 +80,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "696EBD7214F7877900B81BC9"
-            BuildableName = "OnionBrowser.app"
+            BuildableName = "negi.app"
             BlueprintName = "negi"
             ReferencedContainer = "container:OnionBrowser.xcodeproj">
          </BuildableReference>

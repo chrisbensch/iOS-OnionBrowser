@@ -128,7 +128,7 @@ const char AlertViewIncomingUrl;
 
 -(void)loadURL: (NSURL *)navigationURL {
     NSString *urlProto = [navigationURL scheme];
-    if ([urlProto isEqualToString:@"onionbrowser"]||[urlProto isEqualToString:@"onionbrowsers"]||[urlProto isEqualToString:@"http"]||[urlProto isEqualToString:@"https"]) {
+    if ([urlProto isEqualToString:@"negi"]||[urlProto isEqualToString:@"negis"]||[urlProto isEqualToString:@"http"]||[urlProto isEqualToString:@"https"]) {
         /***** One of our supported protocols *****/
         
         // Remove the "connecting..." (initial tor load) overlay if it still exists.
@@ -767,12 +767,12 @@ const char AlertViewIncomingUrl;
             ////////////////////////////////////////////////////////
             // About Page
             ////////////////////////////////////////////////////////
-            [self loadURL:[NSURL URLWithString:@"onionbrowser:about"]];
+            [self loadURL:[NSURL URLWithString:@"negi:about"]];
         } else if (buttonIndex == 5) {
             ////////////////////////////////////////////////////////
             // Help Page
             ////////////////////////////////////////////////////////
-            [self loadURL:[NSURL URLWithString:@"onionbrowser:help"]];
+            [self loadURL:[NSURL URLWithString:@"negi:help"]];
         }
     }
 }
@@ -863,10 +863,10 @@ const char AlertViewIncomingUrl;
     if ((url != nil) && [[url scheme] isEqualToString:@"file"]) {
         // Faked local URLs
         if ([[url absoluteString] rangeOfString:@"startup.html"].location != NSNotFound) {
-            absoluteString = @"onionbrowser:start";
+            absoluteString = @"negi:start";
         }
         else if ([[url absoluteString] rangeOfString:@"about.html"].location != NSNotFound) {
-            absoluteString = @"onionbrowser:about";
+            absoluteString = @"negi:about";
         } else {
             absoluteString = @"";
         }

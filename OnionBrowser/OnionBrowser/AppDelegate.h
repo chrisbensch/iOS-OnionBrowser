@@ -46,8 +46,8 @@
 
 @property (nonatomic) WebViewController *appWebView;
 
-// either nil (to load regular homepage) or url given by a "onionbrowser://" (HTTP)
-// or "onionbrowsers://" (HTTPS) callback url -- when this app is started from another app
+// either nil (to load regular homepage) or url given by a "negi://" (HTTP)
+// or "negis://" (HTTPS) callback url -- when this app is started from another app
 @property (nonatomic) NSURL *startUrl;
 
 // list for known domains w/self-signed certs

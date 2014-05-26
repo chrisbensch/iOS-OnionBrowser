@@ -91,25 +91,25 @@
 
 
 - (void)startLoading {
-    if ([[[[self request] URL] scheme] isEqualToString:@"onionbrowser"]) {
+    if ([[[[self request] URL] scheme] isEqualToString:@"negi"]) {
         NSURL *url;
         NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
         resourcePath = [resourcePath stringByReplacingOccurrencesOfString:@"/" withString:@"//"];
         resourcePath = [resourcePath stringByReplacingOccurrencesOfString:@" " withString:@"%20"];
         if ([[[[self request] URL] absoluteString] rangeOfString:@"about"].location != NSNotFound) {
-            /* onionbrowser:about */
+            /* negi:about */
             url = [NSURL URLWithString: [NSString stringWithFormat:@"file:/%@/about.html",resourcePath]];
         } else if ([[[[self request] URL] absoluteString] rangeOfString:@"start2"].location != NSNotFound) {
-            /* onionbrowser:start2 -- inner iframe banner */
+            /* negi:start2 -- inner iframe banner */
             url = [NSURL URLWithString: [NSString stringWithFormat:@"file:/%@/startup2.html",resourcePath]];
         } else if ([[[[self request] URL] absoluteString] rangeOfString:@"icon"].location != NSNotFound) {
-            /* onionbrowser:icon */
+            /* negi:icon */
             url = [NSURL URLWithString: [NSString stringWithFormat:@"file:/%@/Icon@2x.png",resourcePath]];
         } else if ([[[[self request] URL] absoluteString] rangeOfString:@"help"].location != NSNotFound) {
-            /* onionbrowser:help */
+            /* negi:help */
             url = [NSURL URLWithString: [NSString stringWithFormat:@"file:/%@/help.html",resourcePath]];
         } else {
-            /* onionbrowser:home */
+            /* negi:home */
             url = [NSURL URLWithString: [NSString stringWithFormat:@"file:/%@/startup.html",resourcePath]];
         }
         NSMutableURLRequest *newRequest = [NSMutableURLRequest requestWithURL:url];

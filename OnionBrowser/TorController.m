@@ -280,7 +280,7 @@
                 if (appDelegate.startUrl != nil) {
                     [wvc askToLoadURL:appDelegate.startUrl];
                 } else {
-                    // Didn't launch with a "onionbrowser://" or "onionbrowsers://" URL
+                    // Didn't launch with a "negi://" or "negis://" URL
                     // so just launch regular start page.
                     [wvc loadURL:[NSURL URLWithString:appDelegate.homepage]];
                 }
