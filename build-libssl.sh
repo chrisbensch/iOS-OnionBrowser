@@ -2,9 +2,10 @@
 #  Builds openssl for all five current iPhone targets: iPhoneSimulator-i386,
 #  iPhoneSimulator-x86_64, iPhoneOS-armv7, iPhoneOS-armv7s, iPhoneOS-arm64.
 #
-#  Copyright 2012 Mike Tigas <mike@tig.as>
+#  Copyright 2012-2016 Mike Tigas <mike AT tig DOT as>
 #
-#  Based on work by Felix Schulze on 16.12.10.
+#  Based on "build-libssl.sh" in OpenSSL-for-iPhone by Felix Schulze,
+#  forked on 2012-02-24. Original license follows:
 #  Copyright 2010 Felix Schulze. All rights reserved.
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,10 +23,9 @@
 ###########################################################################
 #  Choose your openssl version and your currently-installed iOS SDK version:
 #
-VERSION="1.0.1g"
-#VERSION="1.0.2-beta1"
-USERSDKVERSION="7.1"
-MINIOSVERSION="6.0"
+VERSION="1.0.2h"
+USERSDKVERSION="9.3"
+MINIOSVERSION="8.2"
 VERIFYGPG=true
 
 ###########################################################################
@@ -36,7 +36,7 @@ VERIFYGPG=true
 
 # No need to change this since xcode build will only compile in the
 # necessary bits from the libraries we create
-ARCHS="i386 x86_64 armv7 armv7s arm64"
+ARCHS="i386 x86_64 armv7 arm64"
 
 DEVELOPER=`xcode-select -print-path`
 #DEVELOPER="/Applications/Xcode.app/Contents/Developer"
@@ -46,18 +46,17 @@ DEVELOPER=`xcode-select -print-path`
 if [ "$1" == "--noverify" ]; then
 	VERIFYGPG=false
 fi
-if [ "$2" == "--i386only" ]; then
-	ARCHS="i386"
+if [ "$2" == "--travis" ]; then
+	ARCHS="i386 x86_64"
 fi
 
-#if [[ ! -z "$TRAVIS" && $TRAVIS ]]; then
-#	# Travis CI highest available version
-#	echo "==================== TRAVIS CI ===================="
-#	SDKVERSION="7.0"
-#else
-#	SDKVERSION="$USERSDKVERSION"
-#fi
-SDKVERSION="$USERSDKVERSION"
+if [[ ! -z "$TRAVIS" && $TRAVIS ]]; then
+	# Travis CI highest available version
+	echo "==================== TRAVIS CI ===================="
+	SDKVERSION="9.3"
+else
+	SDKVERSION="$USERSDKVERSION"
+fi
 
 cd "`dirname \"$0\"`"
 REPOROOT=$(pwd)
@@ -85,7 +84,7 @@ set -e
 
 if [ ! -e "${SRCDIR}/openssl-${VERSION}.tar.gz" ]; then
 	echo "Downloading openssl-${VERSION}.tar.gz"
-	curl -O http://www.openssl.org/source/openssl-${VERSION}.tar.gz
+	curl -O https://www.openssl.org/source/openssl-${VERSION}.tar.gz
 fi
 echo "Using openssl-${VERSION}.tar.gz"
 
@@ -93,7 +92,7 @@ echo "Using openssl-${VERSION}.tar.gz"
 # up to you to set up `gpg` and add keys to your keychain
 if $VERIFYGPG; then
 	if [ ! -e "${SRCDIR}/openssl-${VERSION}.tar.gz.asc" ]; then
-		curl -O http://www.openssl.org/source/openssl-${VERSION}.tar.gz.asc
+		curl -O https://www.openssl.org/source/openssl-${VERSION}.tar.gz.asc
 	fi
 	echo "Using openssl-${VERSION}.tar.gz.asc"
 	if out=$(gpg --status-fd 1 --verify "openssl-${VERSION}.tar.gz.asc" "openssl-${VERSION}.tar.gz" 2>/dev/null) &&
@@ -131,7 +130,7 @@ do
 		sed -ie "s!static volatile sig_atomic_t intr_signal;!static volatile intr_signal;!" "crypto/ui/ui_openssl.c"
 		PLATFORM="iPhoneOS"
 	fi
-	
+
 	mkdir -p "${INTERDIR}/${PLATFORM}${SDKVERSION}-${ARCH}.sdk"
 
 	export PATH="${DEVELOPER}/Toolchains/XcodeDefault.xctoolchain/usr/bin/:${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer/usr/bin/:${DEVELOPER}/Toolchains/XcodeDefault.xctoolchain/usr/bin:${DEVELOPER}/usr/bin:${ORIGINALPATH}"
@@ -152,7 +151,8 @@ do
 	# we have set up. Make sure to clean up afterward because we will re-use
 	# this source tree to cross-compile other targets.
 	make
-	make install
+	# docs break on Yosemite; we don't need docs but "make install" installs docs
+	make all install_sw
 	make clean
 done
 

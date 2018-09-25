@@ -1,3 +1,6 @@
+Iobfs4proxy.framework/
+iobfs/
+
 # Xcode
 build/*
 *.pbxuser
@@ -18,3 +21,7 @@ dependencies-*/*
 .LSOverride
 .DS_Store
 *.swp
+
+.ruby-version
+Gemfile
+Gemfile.lock

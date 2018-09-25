@@ -2,9 +2,10 @@
 # Builds libevent for all five current iPhone targets: iPhoneSimulator-i386,
 # iPhoneSimulator-x86_64, iPhoneOS-armv7, iPhoneOS-armv7s, iPhoneOS-arm64.
 #
-# Copyright 2012 Mike Tigas <mike@tig.as>
+# Copyright 2012-2016 Mike Tigas <mike AT tig DOT as>
 #
-# Based on work by Felix Schulze on 16.12.10.
+# Based on "build-libssl.sh" in OpenSSL-for-iPhone by Felix Schulze,
+# forked on 2012-02-24. Original license follows:
 # Copyright 2010 Felix Schulze. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,9 +23,9 @@
 ###########################################################################
 # Choose your libevent version and your currently-installed iOS SDK version:
 #
-VERSION="2.0.21-stable"
-USERSDKVERSION="7.1"
-MINIOSVERSION="6.0"
+VERSION="2.0.22-stable"
+USERSDKVERSION="9.3"
+MINIOSVERSION="8.2"
 VERIFYGPG=true
 
 ###########################################################################
@@ -35,7 +36,7 @@ VERIFYGPG=true
 
 # No need to change this since xcode build will only compile in the
 # necessary bits from the libraries we create
-ARCHS="i386 x86_64 armv7 armv7s arm64"
+ARCHS="i386 x86_64 armv7 arm64"
 
 DEVELOPER=`xcode-select -print-path`
 #DEVELOPER="/Applications/Xcode.app/Contents/Developer"
@@ -45,18 +46,17 @@ DEVELOPER=`xcode-select -print-path`
 if [ "$1" == "--noverify" ]; then
 	VERIFYGPG=false
 fi
-if [ "$2" == "--i386only" ]; then
-	ARCHS="i386"
+if [ "$2" == "--travis" ]; then
+	ARCHS="i386 x86_64"
 fi
 
-#if [[ ! -z "$TRAVIS" && $TRAVIS ]]; then
-#	# Travis CI highest available version
-#	echo "==================== TRAVIS CI ===================="
-#	SDKVERSION="7.0"
-#else
-#	SDKVERSION="$USERSDKVERSION"
-#fi
-SDKVERSION="$USERSDKVERSION"
+if [[ ! -z "$TRAVIS" && $TRAVIS ]]; then
+	# Travis CI highest available version
+	echo "==================== TRAVIS CI ===================="
+	SDKVERSION="9.3"
+else
+	SDKVERSION="$USERSDKVERSION"
+fi
 
 cd "`dirname \"$0\"`"
 REPOROOT=$(pwd)
@@ -85,7 +85,7 @@ set -e
 
 if [ ! -e "${SRCDIR}/libevent-${VERSION}.tar.gz" ]; then
 	echo "Downloading libevent-${VERSION}.tar.gz"
-	curl -LO https://github.com/downloads/libevent/libevent/libevent-${VERSION}.tar.gz
+	curl -LO https://github.com/libevent/libevent/releases/download/release-${VERSION}/libevent-${VERSION}.tar.gz
 fi
 echo "Using libevent-${VERSION}.tar.gz"
 
@@ -93,7 +93,7 @@ echo "Using libevent-${VERSION}.tar.gz"
 # may have to import from link on http://www.wangafu.net/~nickm/ or http://www.citi.umich.edu/u/provos/
 if $VERIFYGPG; then
 	if [ ! -e "${SRCDIR}/libevent-${VERSION}.tar.gz.asc" ]; then
-		curl -LO https://github.com/downloads/libevent/libevent/libevent-${VERSION}.tar.gz.asc
+		curl -LO https://github.com/libevent/libevent/releases/download/release-${VERSION}/libevent-${VERSION}.tar.gz.asc
 	fi
 	echo "Using libevent-${VERSION}.tar.gz.asc"
 	if out=$(gpg --status-fd 1 --verify "libevent-${VERSION}.tar.gz.asc" "libevent-${VERSION}.tar.gz" 2>/dev/null) &&
@@ -131,7 +131,7 @@ do
 		EXTRA_CONFIG=""
 	else
 		PLATFORM="iPhoneOS"
-		EXTRA_CONFIG="--host=arm-apple-darwin11"
+		EXTRA_CONFIG="--host=arm-apple-darwin14"
 	fi
 
 	mkdir -p "${INTERDIR}/${PLATFORM}${SDKVERSION}-${ARCH}.sdk"
@@ -142,13 +142,13 @@ do
 	./configure --disable-shared --enable-static --disable-debug-mode ${EXTRA_CONFIG} \
 	--prefix="${INTERDIR}/${PLATFORM}${SDKVERSION}-${ARCH}.sdk" \
 	LDFLAGS="$LDFLAGS -L${OUTPUTDIR}/lib" \
-	CFLAGS="$CFLAGS -O2 -I${OUTPUTDIR}/include -isysroot ${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer/SDKs/${PLATFORM}${SDKVERSION}.sdk" \
+	CFLAGS="$CFLAGS -Os -I${OUTPUTDIR}/include -isysroot ${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer/SDKs/${PLATFORM}${SDKVERSION}.sdk" \
 	CPPFLAGS="$CPPFLAGS -I${OUTPUTDIR}/include -isysroot ${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer/SDKs/${PLATFORM}${SDKVERSION}.sdk"
 
 	# Build the application and install it to the fake SDK intermediary dir
 	# we have set up. Make sure to clean up afterward because we will re-use
 	# this source tree to cross-compile other targets.
-	make -j4
+	make -j$(sysctl hw.ncpu | awk '{print $2}')
 	make install
 	make clean
 done

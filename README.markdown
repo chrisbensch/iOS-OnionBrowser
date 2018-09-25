@@ -1,8 +1,8 @@
 ## Onion Browser
 
-[![Build Status](https://travis-ci.org/mtigas/iOS-OnionBrowser.png)](https://travis-ci.org/mtigas/iOS-OnionBrowser)  
-[Official Site][official] | [Support][help] | [Changelog][changelog]  
-&copy; 2012-2014 [Mike Tigas][miketigas] ([@mtigas](https://twitter.com/mtigas))  
+[![Build Status](https://travis-ci.org/mtigas/iOS-OnionBrowser.svg?branch=master)](https://travis-ci.org/mtigas/iOS-OnionBrowser)  
+[Official Site][official] | [Support][help] | [Changelog][changelog] | [Donate][donate]  
+&copy; 2012-2016 [Mike Tigas][miketigas] ([@mtigas](https://twitter.com/mtigas))  
 [MIT License][license]
 
 A minimal, open-source web browser for iOS that tunnels web traffic through
@@ -11,19 +11,25 @@ and App Store links.
 
 ---
 
-* **OnionBrowser**: 1.5.1 (20140520.1) — [See changelog][changelog]
-* **[Tor][tor]**: 0.2.4.22 (May 16 2014)
-* **[libevent][libevent]**: 2.0.21-stable (Nov 18 2012)
-* **[OpenSSL][openssl]**: 1.0.1g (Apr 07 2014)
+* **OnionBrowser**: 1.6.2 (20160824.1) - See [official release history][releases] and [changelog][changelog].
+* **[Tor][tor]**: 0.2.8.7 (Aug 24 2016)
+* **[iObfs][iobfs]**: 26463e2 (Jul 15 2016)
+  * **obfs4proxy**: 0.0.7-dev, upstream 6205762 (Jul 10 2016)
+  * **golang**: 1.7 (Aug 15 2016)
+* **[libevent][libevent]**: 2.0.22-stable (Jan 05 2015)
+* **[OpenSSL][openssl]**: 1.0.2h (May 03 2016)
 
-[official]: http://onionbrowser.com/
-[help]: http://onionbrowser.com/help/
-[changelog]: https://raw.github.com/mtigas/iOS-OnionBrowser/master/CHANGES.txt
+[official]: https://mike.tig.as/onionbrowser/
+[help]: https://mike.tig.as/onionbrowser/help/
+[releases]: https://github.com/OnionBrowser/iOS-OnionBrowser/releases
+[changelog]: https://raw.github.com/OnionBrowser/iOS-OnionBrowser/master/CHANGES.txt
+[donate]: https://mike.tig.as/onionbrowser/#support-project
 [miketigas]: https://mike.tig.as/
-[license]: https://github.com/mtigas/iOS-OnionBrowser/blob/master/LICENSE
+[license]: https://github.com/OnionBrowser/iOS-OnionBrowser/blob/master/LICENSE
 [tor]: https://www.torproject.org/
 [libevent]: http://libevent.org/
 [openssl]: https://www.openssl.org/
+[iobfs]: https://github.com/mtigas/iObfs
 
 <a href="https://d2p12wh0p3fo1n.cloudfront.net/files/20120918/a.png"><img src="https://d2p12wh0p3fo1n.cloudfront.net/files/20120918/a-100.jpg" width="100"/></a>
 <a href="https://d2p12wh0p3fo1n.cloudfront.net/files/20120918/b.png"><img src="https://d2p12wh0p3fo1n.cloudfront.net/files/20120918/b-100.jpg" width="100"/></a>
@@ -36,9 +42,8 @@ and App Store links.
 
 ---
 
-#### Integration notes
+#### Adding Onion Browser support to other iOS apps
 
-As of version 1.3.14 (January 30 2014),
 Onion Browser responds to two URL schemes: `onionbrowser://` and
 `onionbrowsers://`, representing HTTP and HTTPS URLs, respectively. These
 work like the URI schemes [in iOS Google Chrome][crios] and other popular
@@ -68,7 +73,7 @@ that you should replace their `googlechrome://` URL schemes with the proper
 
 ---
 
-#### Compilation notes
+#### Implementation notes
 
 The app, when compiled, contains static library versions of [Tor][tor] and it's
 dependencies, [libevent][libevent] and [openssl][openssl].
@@ -80,27 +85,6 @@ i386 (for the iOS Simulator).
 
 [build_libssl]: https://github.com/x2on/OpenSSL-for-iPhone/blob/c637f773a99810bb101169f8e534d0d6b09f3396/build-libssl.sh
 [openssliphone]: https://github.com/x2on/OpenSSL-for-iPhone
-
-The tor `build-tor.sh` script patches one file in Tor (`src/common/compat.c`)
-to remove references to `ptrace()` and `_NSGetEnviron()`. This first is only used
-for the `DisableDebuggerAttachment` feature (default: True) implemented in Tor
-0.2.3.9-alpha. (See [changelog][tor_changelog] and [manual][tor_manual].)
-`ptrace()` and `_NSGetEnviron()` calls are not allowed in App Store apps; apps
-submitted with `ptrace()` symbols are rejected on upload by Apple's
-auto-validation of the uploaded binary. (The `_NSGetEnviron()` code does not
-even compile when using iPhoneSDK due to that function being undefined.)
-See the patch files in `build-patches/` if you are interested in the changes.
-
-[tor_changelog]: https://gitweb.torproject.org/tor.git/blob/tor-0.2.4.18-rc:/ChangeLog
-[tor_manual]: https://www.torproject.org/docs/tor-manual-dev.html.en
-
-0.2.3.17-beta introduced compiler and linker "hardening" ([Tor ticket 5210][ticket5210]),
-which is incompatible with the iOS Device build chain.  The app (when building
-for iOS devices) is configured with `--disable-gcc-hardening --disable-linker-hardening`
-to get around this issue. (Due to the isolation of executable code on iOS devices,
-this should not cause a significant change in security.)
-
-[ticket5210]: https://trac.torproject.org/projects/tor/ticket/5210
 
 Because iOS applications cannot launch subprocesses or otherwise execute other
 binaries, the tor client is run in-process in a `NSThread` subclass which
@@ -119,99 +103,23 @@ to the underlying `CFHTTP` Core Framework connection bits. This connection
 class is where SOCKS5 connectivity is enabled. (Because we are using SOCKS5,
 DNS requests are sent over the Tor network, as well.)
 
-(I had WireShark packet logs to support the claim that this app protects all
-HTTP/HTTPS/DNS traffic in the browser, but seem to have misplaced them. You'll
-have to take my word for it or run your own tests.)
-
-The app uses [Automatic Reference Counting (ARC)][arc] and was developed against
-iOS 5.X or greater. (It *may* work when building against iOS 4.X, since most
-of the ARC behavior exists in that older SDK, with the notable exception
-of weakrefs.)
-
-[arc]: https://developer.apple.com/library/ios/releasenotes/ObjectiveC/RN-TransitioningToARC/index.html
-
-## Building
-
-1. Check Xcode version
-2. Build dependencies via command-line
-3. Build application in XCode
-
-### Check Xcode version
-
-Double-check that the "currently selected" Xcode Tools correspond to the version
-of Xcode you have installed:
-
-    xcode-select -print-path
-
-For the newer Xcode 4.3+ installed via the App Store, the directory should be
-`/Applications/Xcode.app/Contents/Developer`, and not the straight `/Developer`
-(used by Xcode 4.2 and earlier). If you have both copies of Xcode installed
-(or if you have updated to Xcode 4.3 but `/Developer` still shows), do this:
-
-    sudo xcode-select -switch /Applications/Xcode.app/Contents/Developer
-
-### Building dependencies
-
-**Optional** PGP key verification. (Currently in testing.) The build scripts
-for OpenSSL, libevent, and tor, verify that the package downloaded is PGP
-signed by one of the users responsible for packaging the library. You'll
-need to have GnuPG installed and import their public keys to allow this to
-work.
-
-* OpenSSL: [core developers](https://www.openssl.org/about/). 1.0.1f is known
-  to be signed by Dr Stephen Henson
-  [0xF295C759](http://pgp.mit.edu:11371/pks/lookup?op=vindex&search=0xF295C759).
-* libevent: [Nick Mathewson](http://www.wangafu.net/~nickm/)
-  ([0x165733EA](http://www.wangafu.net/~nickm/public_key.asc)) or
-  [Neils Provos](http://www.citi.umich.edu/u/provos/)
-  ([0xC2009841](http://www.citi.umich.edu/u/provos/pgp.key)). 2.0.21 is known
-  to be signed by Nick Matthewson 0x8D29319A (subkey of 0x165733EA).
-* tor: [signing key info](https://www.torproject.org/docs/signing-keys.html.en).
-  0.2.4.20 is known to be signed by Roger Dingledine
-  ([0x19F78451](http://pgp.mit.edu/pks/lookup?op=get&search=0x19F78451).
-
-If you don't care about PGP key verification, you'll need to run each of
-the scripts with the `--noverify` option or change `VERIFYGPG` to `false`
-in each of the `build-*.sh` scripts before continuing.)
-
-`cd` to the root directory of this repository and then run these commands in
-the following order to build the dependencies. (This can take anywhere between
-five and thirty minutes depending on your system speed.)
-
-    bash build-libssl.sh
-    bash build-libevent.sh
-    bash build-tor.sh
-    bash OnionBrowser/icon/install.sh
-
-This should create a `dependencies` directory in the root of the repository,
-containing the statically-compiled library files.
-
-### Build OnionBrowser.xcodeproj in Xcode
-
-Open `OnionBrowser/OnionBrowser.xcodeproj`. You should be
-able to compile and run the application at this point.
-
-The app and all dependencies are compiled to run against `arm64` (iPhone 5S
-64-bit "A7" processor), `armv7s` (iPhone 5 "A6" processor), and `armv7`
-platforms. This means all devices since the iPhone 4 (running at least iOS
-6.0) are supported.
-
-All dependencies are further compiled for `i386` and `x86_64` targets, so
-that both the 32-bit and 64-bit iOS Simulators are supported.
-
 ### Information for forks
 
 1. If you're distributing an app that builds off of the Onion Browser code,
    you need to use your own app name and logo.
 
+   * Note that you also **cannot** use the official Tor Project logo and names
+     (i.e. "Tor", "Tor Browser", "Tor Browser Bundle") without written
+     permission from the Tor Project. Please
+     [see their trademark FAQ for more information](https://www.torproject.org/docs/trademark-faq).
+
 2. If you're distributing an app that builds off of the Onion Browser code,
-   you need to cite Onion Browser within your app's credits as part of
+   you **must** cite Onion Browser within your app's credits as part of
    the terms of the normal MIT License.
 
-   [See the LICENSE file][license] for information -- generally you need to
+   [See the LICENSE file][license] -- generally you need to
    include everything from the "ONION BROWSER LICENSE" section down through
-   the rest of the file, but see the "TRADEMARK / LICENSE / FORK INFORMATION"
-   section there.
+   the rest of the file. Read that file for more information, though.
 
 3. You'll need to make sure the "Bundle identifier" (under "Info" in the
    app's Target Properties) is set to your own identifier and not

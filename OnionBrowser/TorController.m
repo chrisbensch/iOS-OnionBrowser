@@ -118,16 +118,16 @@
 
 - (void)appDidBecomeActive {
     if (![_mSocket isConnected]) {
-        #ifdef DEBUG
-        NSLog(@"[tor] Came back from background, sending HUP" );
-        #endif
         [_mSocket writeString:@"SIGNAL HUP\n" encoding:NSUTF8StringEncoding];
-        _torCheckLoopTimer = [NSTimer scheduledTimerWithTimeInterval:0.25f
-                                                              target:self
-                                                            selector:@selector(activateTorCheckLoop)
-                                                            userInfo:nil
-                                                             repeats:NO];
     }
+    #ifdef DEBUG
+    NSLog(@"[tor] Came back from background, trying to talk to Tor again" );
+    #endif
+    _torCheckLoopTimer = [NSTimer scheduledTimerWithTimeInterval:0.25f
+                                                          target:self
+                                                        selector:@selector(activateTorCheckLoop)
+                                                        userInfo:nil
+                                                         repeats:NO];
 }
 
 #pragma mark -
@@ -193,6 +193,21 @@
 }
 
 
+- (void) disableNetwork {
+    [_mSocket writeString:@"setconf disablenetwork=1\n" encoding:NSUTF8StringEncoding];
+}
+
+- (void) enableNetwork {
+    [_mSocket writeString:@"setconf disablenetwork=0\n" encoding:NSUTF8StringEncoding];
+}
+
+- (void)getCircuitInfo {
+    [_mSocket writeString:@"getinfo circuit-status\n" encoding:NSUTF8StringEncoding];
+}
+/*
+- (void)getCircuitInfoResponse {
+}
+*/
 
 - (void)netsocketConnected:(ULINetSocket*)inNetSocket {
     /* Authenticate on first control port connect */
@@ -303,7 +318,7 @@
                                                                      repeats:NO];
             }
         }
-    } else if ([msgIn rangeOfString:@"+orconn-status="].location != NSNotFound) {
+    } else if ([msgIn rangeOfString:@"orconn-status="].location != NSNotFound) {
         [_torStatusTimeoutTimer invalidate];
         
         // Response to "getinfo orconn-status"
@@ -329,6 +344,11 @@
                                                                  repeats:NO];
         }
     }
+    #ifdef DEBUG
+    else if ([msgIn rangeOfString:@"circuit-status"].location != NSNotFound) {
+      NSLog(@"%@", msgIn);
+    }
+    #endif
 }
 
 - (void)netsocketDataSent:(ULINetSocket*)inNetSocket { }

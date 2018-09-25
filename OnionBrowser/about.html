@@ -5,13 +5,17 @@
 </head><body>
 <p>Onion Browser<br><a href="https://mike.tig.as/onionbrowser/">https://mike.tig.as/onionbrowser/</a> (<a href="http://tigas3l7uusztiqu.onion/onionbrowser/">.onion</a>)<br>
 Support:<br><a href="https://mike.tig.as/onionbrowser/help/">https://mike.tig.as/onionbrowser/help/</a> (<a href="http://tigas3l7uusztiqu.onion/onionbrowser/help/">.onion</a>)<br>
-Version History:<br><a href="https://raw.github.com/mtigas/iOS-OnionBrowser/master/CHANGES.txt">https://raw.github.com/mtigas/iOS-OnionBrowser/master/CHANGES.txt</a></p>
-    <p>&copy; 2012-2014 Mike Tigas<br>(<a href="https://mike.tig.as/">https://mike.tig.as/</a> | <a href="http://tigas3l7uusztiqu.onion/">tigas3l7uusztiqu.onion</a>)</p>
+Version History:<br><a href="https://raw.github.com/OnionBrowser/iOS-OnionBrowser/master/CHANGES.txt">https://raw.github.com/OnionBrowser/iOS-OnionBrowser/master/CHANGES.txt</a></p>
+    <p>&copy; 2012-2016 Mike Tigas<br>(<a href="https://mike.tig.as/">https://mike.tig.as/</a> | <a href="http://tigas3l7uusztiqu.onion/">tigas3l7uusztiqu.onion</a>)</p>
     <ul>
-        <li><b>OnionBrowser</b>: 1.5.1 (20140520.1)</li>
-        <li><b>Tor</b>: 0.2.4.22 (May 16 2014)</li>
-        <li><b>libevent</b>: 2.0.21-stable (Nov 18 2012)</li>
-        <li><b>OpenSSL</b>: 1.0.1g (Apr 07 2014)</li>
+        <li><b>OnionBrowser</b>: 1.6.2 (20160824.1)</li>
+        <li><b>iObfs</b>: 26463e2 (Jul 15 2016)
+          <ul><li><b>obfs4proxy</b>: 0.0.7-dev, upstream 6205762 (Jul 10 2016)</li>
+          <li><b>golang</b>: 1.7 (Aug 15 2016)</li></ul>
+        </li>
+        <li><b>Tor</b>: 0.2.8.7 (Aug 24 2016)</li>
+        <li><b>libevent</b>: 2.0.22-stable (Jan 05 2015)</li>
+        <li><b>OpenSSL</b>: 1.0.2h (May 03 2016)</li>
     </ul>
 <p>Onion Browser is a minimal web browser that encrypts and tunnels web traffic
    through the <a href="https://www.torproject.org/">Tor anonymity network</a>.
@@ -20,20 +24,21 @@ Version History:<br><a href="https://raw.github.com/mtigas/iOS-OnionBrowser/mast
    about Onion Browser and the benefits of using this app,
    <a href="http://onionbrowser.com/">visit the official Onion Browser site</a>.</li>
 <p>This is open source software: source code for this application can be found
-   at <a href="https://github.com/mtigas/iOS-OnionBrowser">https://github.com/mtigas/iOS-OnionBrowser</a> &mdash;
+   at <a href="https://github.com/OnionBrowser/iOS-OnionBrowser">https://github.com/OnionBrowser/iOS-OnionBrowser</a> &mdash;
    see below for license information.
+   <p>Onion Browser is provided as-is and use of the app is at your own risk; the <a href="https://www.apple.com/legal/internet-services/itunes/appstore/dev/stdeula/">standard iOS App Store End User License Agreement</a> and the below license/disclaimer statements apply. Remember: sensitive data does not always belong on a mobile device.
 <hr />
 <h3>License Info</h3>
 <p>The latest license information for this application can always be found at
    the following link:</p>
-<p><a href="https://github.com/mtigas/iOS-OnionBrowser/blob/master/LICENSE">https://github.com/mtigas/iOS-OnionBrowser/blob/master/LICENSE</a></p>
+<p><a href="https://github.com/OnionBrowser/iOS-OnionBrowser/blob/master/LICENSE">https://github.com/OnionBrowser/iOS-OnionBrowser/blob/master/LICENSE</a></p>
 <hr />
     <p><b>Onion Browser</b> is a trademark of Mike Tigas. Forks of this project must not use the "Onion Browser" name or logo when distributing binary forms of this application.</p>
 <p>Mike Tigas and OnionBrowser are not affiliated with nor endorsed by the Tor Project. Onion Browser carries no guarantee from The Tor Project about quality, suitability or anything else. ("Tor" is a registered trademark of The Tor Project, Inc.)</p>
     <hr />
     <h3>License</h3>
 <p><b>OnionBrowser</b><br>
-Copyright &copy; 2012-2014 Mike Tigas</p>
+Copyright &copy; 2012-2016 Mike Tigas</p>
 
 <pre>
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -146,17 +151,17 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 <pre>
  Copyright (c) 2011, Tony Million.
  All rights reserved.
- 
+
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are met:
- 
+
  1. Redistributions of source code must retain the above copyright notice, this
  list of conditions and the following disclaimer.
- 
+
  2. Redistributions in binary form must reproduce the above copyright notice,
  this list of conditions and the following disclaimer in the documentation
  and/or other materials provided with the distribution.
- 
+
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -224,10 +229,35 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 </pre>
 <hr>
+
+<p>Contains QRCodeReaderViewController: <a href="https://github.com/yannickl/QRCodeReaderViewController">https://github.com/yannickl/QRCodeReaderViewController</a></p>
+<pre>
+License (MIT)
+Copyright (c) 2014-present - Yannick Loriot
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+</pre>
+<hr>
 <p>Contains OpenSSL: <a href="http://www.openssl.org/">http://www.openssl.org/</a></p>
 <pre>
-/* ====================================================================
- * Copyright (c) 1998-2011 The OpenSSL Project.  All rights reserved.
+/* =====
+ * Copyright (c) 1998-2016 The OpenSSL Project.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -272,14 +302,14 @@ THE SOFTWARE.
  * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
- * ====================================================================
+ * ======
  *
  * This product includes cryptographic software written by Eric Young
  * (eay@cryptsoft.com).  This product includes software written by Tim
  * Hudson (tjh@cryptsoft.com).
  *
  *
- * ====================================================================
+ * ======
  *
  *
  * Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
@@ -366,7 +396,7 @@ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
 THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-==============================
+======
 
 Portions of Libevent are based on works by others, also made available by
 them under the three-clause BSD license above.  The copyright notices are
@@ -392,7 +422,7 @@ ht-internal.h:
 minheap-internal.h:
    Copyright (c) 2006 Maxim Yegorushkin <maxim.yegorushkin@gmail.com>
 
-==============================
+======
 
 The arc4module is available under the following, sometimes called the
 "OpenBSD" license:
@@ -423,12 +453,12 @@ The arc4module is available under the following, sometimes called the
              If you got this file as a part of a larger bundle,
         there may be other license terms that you should be aware of.
 
-===============================================================================
+======
 Tor is distributed under this license:
 
 Copyright (c) 2001-2004, Roger Dingledine
 Copyright (c) 2004-2006, Roger Dingledine, Nick Mathewson
-Copyright (c) 2007-2011, The Tor Project, Inc.
+Copyright (c) 2007-2016, The Tor Project, Inc.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
@@ -457,7 +487,7 @@ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
 THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-===============================================================================
+======
 src/common/strlcat.c and src/common/strlcpy.c by Todd C. Miller are licensed
 under the following license:
 
@@ -486,7 +516,7 @@ under the following license:
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-===============================================================================
+======
 src/config/geoip is licensed under the following license:
 
 OPEN DATA LICENSE (GeoLite Country and GeoLite City databases)
@@ -520,11 +550,11 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 DATABASE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-===============================================================================
+======
 If you got Tor as a static binary with OpenSSL included, then you should know:
  "This product includes software developed by the OpenSSL Project
  for use in the OpenSSL Toolkit (http://www.openssl.org/)"
-===============================================================================
+======
 </pre>
 
 

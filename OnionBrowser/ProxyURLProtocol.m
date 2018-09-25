@@ -70,8 +70,8 @@
 // Class methods
 
 + (BOOL)canInitWithRequest:(NSURLRequest *)request {
-    if ( !([[[request URL] scheme] isEqualToString:@"file"] ||
-           [[[request URL] scheme] isEqualToString:@"data"]
+    if ( !([[[[request URL] scheme] lowercaseString] isEqualToString:@"file"] ||
+           [[[[request URL] scheme] lowercaseString] isEqualToString:@"data"]
            )
     ) {
         // Previously we checked if it matched "http" or "https". Apparently
@@ -91,7 +91,7 @@
 
 
 - (void)startLoading {
-    if ([[[[self request] URL] scheme] isEqualToString:@"onionbrowser"]) {
+    if ([[[[[self request] URL] scheme] lowercaseString] isEqualToString:@"onionbrowser"]) {
         NSURL *url;
         NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
         resourcePath = [resourcePath stringByReplacingOccurrencesOfString:@"/" withString:@"//"];
@@ -104,7 +104,7 @@
             url = [NSURL URLWithString: [NSString stringWithFormat:@"file:/%@/startup2.html",resourcePath]];
         } else if ([[[[self request] URL] absoluteString] rangeOfString:@"icon"].location != NSNotFound) {
             /* onionbrowser:icon */
-            url = [NSURL URLWithString: [NSString stringWithFormat:@"file:/%@/Icon@2x.png",resourcePath]];
+            url = [NSURL URLWithString: [NSString stringWithFormat:@"file:/%@/AppIcon57x57@2x.png",resourcePath]];
         } else if ([[[[self request] URL] absoluteString] rangeOfString:@"help"].location != NSNotFound) {
             /* onionbrowser:help */
             url = [NSURL URLWithString: [NSString stringWithFormat:@"file:/%@/help.html",resourcePath]];
@@ -113,6 +113,12 @@
             url = [NSURL URLWithString: [NSString stringWithFormat:@"file:/%@/startup.html",resourcePath]];
         }
         NSMutableURLRequest *newRequest = [NSMutableURLRequest requestWithURL:url];
+        [newRequest setAllHTTPHeaderFields:[[self request] allHTTPHeaderFields]];
+        NSURLConnection *con = [NSURLConnection connectionWithRequest:newRequest delegate:self];
+        [self setConnection:(CKHTTPConnection *)con]; // lie.
+    } else if ([[[[[self request] URL] scheme] lowercaseString] isEqualToString:@"about"]) {
+        //only support about:blank
+        NSMutableURLRequest *newRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"about:blank"]];
         [newRequest setAllHTTPHeaderFields:[[self request] allHTTPHeaderFields]];
         NSURLConnection *con = [NSURLConnection connectionWithRequest:newRequest delegate:self];
         [self setConnection:(CKHTTPConnection *)con]; // lie.
@@ -176,7 +182,7 @@
 - (void)HTTPConnection:(CKHTTPConnection *)connection didReceiveResponse:(NSHTTPURLResponse *)response {
     isGzippedResponse = NO;
     #ifdef DEBUG
-        NSLog(@"[ProxyURLProtocol] Got response %d: content-type: %@", [response statusCode], [response MIMEType]);
+        NSLog(@"[ProxyURLProtocol] Got response %ld: content-type: %@", (long)[response statusCode], [response MIMEType]);
     #endif
     if( _data != nil ) {
         _data = nil;
@@ -185,6 +191,10 @@
     
     AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
     NSMutableDictionary *settings = appDelegate.getSettings;
+
+    if ([[[[_request mainDocumentURL] scheme] lowercaseString] isEqualToString:@"https"] && ![[[[response URL] scheme] lowercaseString] isEqualToString:@"https"]) {
+      [appDelegate.appWebView updateTLSStatus:TLSSTATUS_INSECURE];
+    }
 
     /* If this incoming request is HTML or Javascript (based on content-type header),
      * flag it for processing later. (We'll prepend some JS to try to rewrite navigator.useragent,
@@ -213,8 +223,8 @@
         // our strictest-possible header.
         NSMutableDictionary *mHeaders = [NSMutableDictionary dictionary];
         for(id h in response.allHeaderFields) {
-            if(![[h lowercaseString] isEqualToString:@"content-security-policy"] && ![[h lowercaseString] isEqualToString:@"x-webkit-csp"]  && ![[h lowercaseString] isEqualToString:@"cache-control"]) {
-                // Delete existing content-security-policy headers & cache header (since we rely on writing our on strict ones)
+            if(![[h lowercaseString] isEqualToString:@"content-security-policy"] && ![[h lowercaseString] isEqualToString:@"x-webkit-csp"]) {
+                // Delete existing content-security-policy headers (since we rely on writing our on strict ones)
                 [mHeaders setObject:response.allHeaderFields[h] forKey:h];
             }
         }
@@ -222,57 +232,40 @@
                      forKey:@"Content-Security-Policy"];
         [mHeaders setObject:@"script-src 'none';media-src 'none';object-src 'none';connect-src 'none';font-src 'none';sandbox allow-forms allow-top-navigation;style-src 'unsafe-inline' *;"
                      forKey:@"X-Webkit-CSP"];
-        [mHeaders setObject:@"max-age=0, no-cache, no-store, must-revalidate"
-                     forKey:@"Cache-Control"];
         response = [[NSHTTPURLResponse alloc]
                     initWithURL:response.URL statusCode:response.statusCode
                     HTTPVersion:@"1.1" headerFields:mHeaders];
     } else if (([[settings valueForKey:@"javascript"] integerValue] == CONTENTPOLICY_BLOCK_CONNECT)
                && ([response isKindOfClass: [NSHTTPURLResponse class]] == YES)){
-        // In the "block XHR/WebSocket" case, we'll prepend "connect-src 'none';" to an existing CSP header
-        // OR we'll add that header if there isn't already an existing one.
+        // In the "block XHR/Media/WebSocket" case, we'll prepend
+        // "connect-src 'none';media-src 'none';object-src 'none';"
+        // to an existing CSP header OR we'll add that header if there isn't already an existing one.
+        // (Basically as the STRICT case, but allowing script/fonts.)
         NSMutableDictionary *mHeaders = [NSMutableDictionary dictionary];
         Boolean editedCSP = NO;
         Boolean editedWebkitCSP = NO;
         for(id h in response.allHeaderFields) {
             if([[h lowercaseString] isEqualToString:@"content-security-policy"]) {
-                NSString *newHeader = [NSString stringWithFormat:@"connect-src 'none';%@", response.allHeaderFields[h]];
+                NSString *newHeader = [NSString stringWithFormat:@"connect-src 'none';media-src 'none';object-src 'none';%@", response.allHeaderFields[h]];
                 [mHeaders setObject:newHeader forKey:h];
                 editedCSP = YES;
             } else if ([[h lowercaseString] isEqualToString:@"x-webkit-csp"]) {
-                NSString *newHeader = [NSString stringWithFormat:@"connect-src 'none';%@", response.allHeaderFields[h]];
+                NSString *newHeader = [NSString stringWithFormat:@"connect-src 'none';media-src 'none';object-src 'none';%@", response.allHeaderFields[h]];
                 [mHeaders setObject:newHeader forKey:h];
                 editedWebkitCSP = YES;
-            } else if ([[h lowercaseString] isEqualToString:@"cache-control"]) {
-                // Don't pass along existing Cache-Control header
             } else {
                 // Non-CSP header, just pass it on.
                 [mHeaders setObject:response.allHeaderFields[h] forKey:h];
             }
         }
         if (!editedCSP) {
-            [mHeaders setObject:@"connect-src 'none';"
+            [mHeaders setObject:@"connect-src 'none';media-src 'none';object-src 'none';"
                          forKey:@"Content-Security-Policy"];
         }
         if (!editedWebkitCSP) {
-            [mHeaders setObject:@"connect-src 'none'"
+            [mHeaders setObject:@"connect-src 'none';media-src 'none';object-src 'none';"
                          forKey:@"X-Webkit-CSP"];
         }
-        [mHeaders setObject:@"max-age=0, no-cache, no-store, must-revalidate"
-                     forKey:@"Cache-Control"];
-        response = [[NSHTTPURLResponse alloc]
-                    initWithURL:response.URL statusCode:response.statusCode
-                    HTTPVersion:@"1.1" headerFields:mHeaders];
-    } else {
-        // Normal case: let's still disable cache
-        NSMutableDictionary *mHeaders = [NSMutableDictionary dictionary];
-        for(id h in response.allHeaderFields) {
-            if(![[h lowercaseString] isEqualToString:@"cache-control"]) {
-                [mHeaders setObject:response.allHeaderFields[h] forKey:h];
-            }
-        }
-        [mHeaders setObject:@"max-age=0, no-cache, no-store, must-revalidate"
-                     forKey:@"Cache-Control"];
         response = [[NSHTTPURLResponse alloc]
                     initWithURL:response.URL statusCode:response.statusCode
                     HTTPVersion:@"1.1" headerFields:mHeaders];
@@ -339,13 +332,28 @@
     if ((response.statusCode == 301)||(response.statusCode == 302)||(response.statusCode == 307)) {
         NSString *newURL = [[response allHeaderFields] objectForKey:@"Location"];
         #ifdef DEBUG
-            NSLog(@"[ProxyURLProtocol] Got %d redirect from %@ to %@", response.statusCode, _request.URL, newURL);
+            NSLog(@"[ProxyURLProtocol] Got %ld redirect from %@ to %@", (long)response.statusCode, _request.URL, newURL);
         #endif
 
         NSMutableURLRequest *newRequest = [_request mutableCopy];
         [newRequest setHTTPShouldUsePipelining:YES];
         newRequest.URL = [NSURL URLWithString:newURL relativeToURL:_request.URL];
+        if ([[_request mainDocumentURL] isEqual:[_request URL]]) {
+          // Previous request *was* the maindocument request.
+          newRequest.mainDocumentURL = newRequest.URL;
+        }
+
         _request = newRequest;
+
+        if ([[_request mainDocumentURL] isEqual:[_request URL]]) {
+          // Main document changed, double-check secure content status
+          if ([[[[_request mainDocumentURL] scheme] lowercaseString] isEqualToString:@"https"]) {
+            [appDelegate.appWebView updateTLSStatus:TLSSTATUS_YES];
+          } else {
+            [appDelegate.appWebView updateTLSStatus:TLSSTATUS_NO];
+          }
+        }
+
         [[self client] URLProtocol:self wasRedirectedToRequest:_request redirectResponse:response];
     }
 
@@ -374,7 +382,7 @@
             NSLog(@"[ProxyURLProtocol] parsed content-type=%@, encoding=%@, content_encoding=%@", mime, encoding, content_encoding);
         #endif
         NSURLResponse *textResponse;
-        if ([[[response URL] scheme] isEqualToString:@"http"] || [[[response URL] scheme] isEqualToString:@"https"]) {
+        if ([[[[response URL] scheme] lowercaseString] isEqualToString:@"http"] || [[[[response URL] scheme] lowercaseString] isEqualToString:@"https"]) {
             textResponse = [[NSHTTPURLResponse alloc] initWithURL:response.URL statusCode:response.statusCode HTTPVersion:@"1.1" headerFields:[response allHeaderFields]];
         } else {
             textResponse = [[NSURLResponse alloc] initWithURL:response.URL MIMEType:mime expectedContentLength:response.expectedContentLength textEncodingName:encoding];

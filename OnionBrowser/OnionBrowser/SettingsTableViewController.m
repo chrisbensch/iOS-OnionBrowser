@@ -8,40 +8,41 @@
 
 #import "SettingsTableViewController.h"
 #import "AppDelegate.h"
-#import "BridgeTableViewController.h"
+#import "BridgeViewController.h"
 
 @interface SettingsTableViewController ()
 
 @end
 
 @implementation SettingsTableViewController
+@synthesize backButton;
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
     [super viewDidLoad];
-    
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
- 
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+
+	self.title = @"Settings";
+
+	backButton = [[UIBarButtonItem alloc] initWithTitle:@"Save" style:UIBarButtonItemStyleDone target:self action:@selector(goBack)];
+    self.navigationItem.leftBarButtonItem = backButton;
 }
 
-- (void)viewDidUnload
-{
+- (void)viewDidUnload {
     [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     return (IS_IPAD) || (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
 }
 
+- (void)goBack {
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 6;
+    return 7;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -60,6 +61,9 @@
         // DNT header
         return 2;
     } else if (section == 5) {
+        // SSL
+        return 3;
+    } else if (section == 6) {
         // Bridges
         return 1;
     }
@@ -70,9 +74,9 @@
     if (section == 0)
         return @"Home Page";
     else if (section == 1)
-        return @"Active Content Blocking\n(Javascript, Multimedia, External Fonts, Ajax/XHR, WebSockets)\n'Block Ajax…' Mode Recommended.";
+        return @"Active Content Blocking\n(Scripts, Media, Ajax, WebSockets, etc)\n★ 'Block Ajax…' Mode Recommended.";
     else if (section == 2)
-        return @"Cookies\n'Block All' is recommended, but prevents website logins.";
+        return @"Cookies";
     else if (section == 3) {
         NSString *devicename;
         if (IS_IPAD) {
@@ -80,12 +84,28 @@
         } else {
             devicename = @"iPhone";
         }
-        return [NSString stringWithFormat:@"User-Agent Spoofing\n'Standard' does not hide your device info (%@, iOS %@).\n'Normalized' is recommended & masks your actual device/version.\n'Desktop' options try to mask that you use a iOS device.", devicename, [[UIDevice currentDevice] systemVersion]];
+        return [NSString stringWithFormat:@"User-Agent Spoofing\n★ 'Standard' does not hide your device info (%@, iOS %@).\n★ 'Normalized' is recommended & masks your actual device/version.\n★ Win/Mac options try to mask that you use a iOS device.", devicename, [[UIDevice currentDevice] systemVersion]];
     } else if (section == 4)
         return @"Do Not Track (DNT) Header\nThis does not prevent sites from tracking you: this only tells sites that you prefer not being tracked for customzied advertising.";
     else if (section == 5)
-        return @"Tor Bridges\nSet up bridges if you have issues connecting to Tor. Remove all bridges to go back standard connection mode.\nSee http://onionbrowser.com/help/ for instructions.";
-    else
+        return @"Minimum SSL/TLS protocol\nNewer TLS protocols are more secure, but might not be supported by all sites.";
+	else if (section == 6) {
+		NSString *bridgeMsg = @"Tor Bridges\nUse bridges if your Internet Service Provider (ISP) blocks connections to Tor.";
+
+		AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+		NSUInteger numBridges = [appDelegate numBridgesConfigured];
+
+		if (numBridges == 0) {
+			bridgeMsg = [bridgeMsg stringByAppendingString:@"\nNo bridges currently configured."];
+		} else {
+			bridgeMsg = [bridgeMsg stringByAppendingString:[NSString stringWithFormat:@"\nCurrently Using %ld Bridge",
+								   (unsigned long)numBridges]];
+			if (numBridges > 1) {
+				bridgeMsg = [bridgeMsg stringByAppendingString:@"s"];
+			}
+		}
+		return bridgeMsg;
+	} else
         return nil;
 }
 
@@ -159,7 +179,7 @@
         } else if (indexPath.row == 1) {
             cell.textLabel.text = @"Block Third-Party";
         } else if (indexPath.row == 2) {
-            cell.textLabel.text = @"Block All";
+            cell.textLabel.text = @"Disable Cookies";
         }
     } else if (indexPath.section == 3) {
         // User-Agent
@@ -189,14 +209,14 @@
                 cell.accessoryType = UITableViewCellAccessoryNone;
             }
         } else if (indexPath.row == 3) {
-            cell.textLabel.text = @"Windows 7 (NT 6.1), Firefox 24";
+            cell.textLabel.text = @"Windows 7 (NT 6.1), Firefox 45";
             if (spoofUserAgent == UA_SPOOF_WIN7_TORBROWSER) {
                 cell.accessoryType = UITableViewCellAccessoryCheckmark;
             } else {
                 cell.accessoryType = UITableViewCellAccessoryNone;
             }
         } else if (indexPath.row == 4) {
-            cell.textLabel.text = @"Mac OS X 10.9.2, Safari 7.0.3";
+            cell.textLabel.text = @"Mac OS X 10.11.6, Safari 9.1.2";
             if (spoofUserAgent == UA_SPOOF_SAFARI_MAC) {
                 cell.accessoryType = UITableViewCellAccessoryCheckmark;
             } else {
@@ -225,27 +245,37 @@
             }
         }
     } else if (indexPath.section == 5) {
+        // SSL
         AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
-        
-        NSFetchRequest *request = [[NSFetchRequest alloc] init];
-        NSEntityDescription *entity = [NSEntityDescription entityForName:@"Bridge" inManagedObjectContext:appDelegate.managedObjectContext];
-        [request setEntity:entity];
-        
-        NSError *error = nil;
-        NSMutableArray *mutableFetchResults = [[appDelegate.managedObjectContext executeFetchRequest:request error:&error] mutableCopy];
-        if (mutableFetchResults == nil) {
-            // Handle the error.
-        }
+        NSMutableDictionary *settings = appDelegate.getSettings;
+        NSInteger dntHeader = [[settings valueForKey:@"tlsver"] integerValue];
 
+        if (indexPath.row == 0) {
+            cell.textLabel.text = @"SSL v3 (INSECURE)";
+            if (dntHeader == X_TLSVER_ANY) {
+                cell.accessoryType = UITableViewCellAccessoryCheckmark;
+            } else {
+                cell.accessoryType = UITableViewCellAccessoryNone;
+            }
+        } else if (indexPath.row == 1) {
+            cell.textLabel.text = @"TLS 1.0+";
+            if (dntHeader == X_TLSVER_TLS1) {
+                cell.accessoryType = UITableViewCellAccessoryCheckmark;
+            } else {
+                cell.accessoryType = UITableViewCellAccessoryNone;
+            }
+        } else if (indexPath.row == 2) {
+            cell.textLabel.text = @"TLS 1.2 only";
+            if (dntHeader == X_TLSVER_TLS1_2_ONLY) {
+                cell.accessoryType = UITableViewCellAccessoryCheckmark;
+            } else {
+                cell.accessoryType = UITableViewCellAccessoryNone;
+            }
+        }
+    } else if (indexPath.section == 6) {
         cell.selectionStyle = UITableViewCellSelectionStyleBlue;
         cell.textLabel.textAlignment = NSTextAlignmentCenter;
-        NSUInteger numBridges = [mutableFetchResults count];
-        if (numBridges == 0) {
-            cell.textLabel.text = @"Not Using Bridges";
-        } else {
-            cell.textLabel.text = [NSString stringWithFormat:@"%ld Bridges Configured",
-                                   (unsigned long)numBridges];
-        }
+        cell.textLabel.text = @"Configure Bridges";
     }
     
     return cell;
@@ -258,15 +288,33 @@
         AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
         NSMutableDictionary *settings2 = appDelegate.getSettings;
 
-        UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"Home Page" message:@"Leave blank to use default\nOnion Browser home page." delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Save",nil];
-        alert.alertViewStyle = UIAlertViewStylePlainTextInput;
-        
-        UITextField *textField = [alert textFieldAtIndex:0];
-        textField.autocorrectionType = UITextAutocorrectionTypeNo;
-        [textField setKeyboardType:UIKeyboardTypeURL];
-        textField.text = [settings2 objectForKey:@"homepage"];
-        
-        [alert show];
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Home Page" message:@"Leave blank to use default\nOnion Browser home page." preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+        [alert addAction:[UIAlertAction actionWithTitle:@"Save" style:UIAlertActionStyleDefault handler:^(UIAlertAction *_Nonnull action) {
+            AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+            NSMutableDictionary *settings = appDelegate.getSettings;
+
+
+
+            if ([[alert.textFields.firstObject text] length] == 0) {
+                [settings setValue:@"onionbrowser:home" forKey:@"homepage"]; // DEFAULT HOMEPAGE
+            } else {
+                NSString *h = [alert.textFields.firstObject text];
+                if ( (![h hasPrefix:@"http:"]) && (![h hasPrefix:@"https:"]) && (![h hasPrefix:@"onionbrowser:"]) && (![h hasPrefix:@"about:"]) )
+                    h = [NSString stringWithFormat:@"http://%@", h];
+                [settings setValue:h forKey:@"homepage"];
+            }
+            [appDelegate saveSettings:settings];
+            [self.tableView reloadData];
+        }]];
+        [alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+          textField.autocorrectionType = UITextAutocorrectionTypeNo;
+          [textField setKeyboardType:UIKeyboardTypeURL];
+          textField.text = [settings2 objectForKey:@"homepage"];
+        }];
+
+
+        [self presentViewController:alert animated:YES completion:NULL];
     } else if (indexPath.section == 1) {
         // Active Content
         AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
@@ -275,30 +323,24 @@
         if (indexPath.row == 0) {
             [settings setObject:[NSNumber numberWithInteger:CONTENTPOLICY_BLOCK_CONNECT] forKey:@"javascript"];
             [appDelegate saveSettings:settings];
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Experimental Feature"
-                                                            message:[NSString stringWithFormat:@"Blocking of Ajax/XHR/WebSocket requests is experimental. Some websites may not work if these dynamic requests are blocked; but these dynamic requests can leak your identity."]
-                                                           delegate:nil
-                                                  cancelButtonTitle:@"OK"
-                                                  otherButtonTitles:nil];
-            [alert show];
+
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Experimental Feature" message:@"Blocking of Ajax/XHR/WebSocket requests is experimental. Some websites may not work if these dynamic requests are blocked; but these dynamic requests can leak your identity." preferredStyle:UIAlertControllerStyleAlert];
+            [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil]];
+            [self presentViewController:alert animated:YES completion:NULL];
         } else if (indexPath.row == 1) {
             [settings setObject:[NSNumber numberWithInteger:CONTENTPOLICY_STRICT] forKey:@"javascript"];
             [appDelegate saveSettings:settings];
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Experimental Feature"
-                                                            message:[NSString stringWithFormat:@"Blocking all active content is an experimental feature.\n\nDisabling active content makes it harder for websites to identify your device, but websites will be able to tell that you are blocking scripts. This may be identifying information if you are the only user that blocks scripts.\n\nSome websites may not work if active content is blocked.\n\nBlocking may cause Onion Browser to crash when loading script-heavy websites."]
-                                                           delegate:nil
-                                                  cancelButtonTitle:@"OK"
-                                                  otherButtonTitles:nil];
-            [alert show];
+
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Experimental Feature" message:@"Blocking all active content is an experimental feature.\n\nDisabling active content makes it harder for websites to identify your device, but websites will be able to tell that you are blocking scripts. This may be identifying information if you are the only user that blocks scripts.\n\nSome websites may not work if active content is blocked.\n\nBlocking may cause Onion Browser to crash when loading script-heavy websites." preferredStyle:UIAlertControllerStyleAlert];
+            [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil]];
+            [self presentViewController:alert animated:YES completion:NULL];
         } else if (indexPath.row == 2) {
             [settings setObject:[NSNumber numberWithInteger:CONTENTPOLICY_PERMISSIVE] forKey:@"javascript"];
             [appDelegate saveSettings:settings];
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Security Warning"
-                                                             message:[NSString stringWithFormat:@"The 'Allow All' setting is UNSAFE and only recommended if a trusted site requires Ajax or WebSockets.\n\nWebSocket requests happen outside of Tor and will unmask your real IP address."]
-                                                            delegate:nil
-                                                   cancelButtonTitle:@"OK"
-                                                   otherButtonTitles:nil];
-            [alert show];
+
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Security Warning" message:@"The 'Allow All' setting is UNSAFE and only recommended if a trusted site requires Ajax or WebSockets.\n\nWebSocket requests happen outside of Tor and will unmask your real IP address." preferredStyle:UIAlertControllerStyleAlert];
+            [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil]];
+            [self presentViewController:alert animated:YES completion:NULL];
         }
     } else if(indexPath.section == 2) {
         // Cookies
@@ -343,12 +385,10 @@
                 [settings setObject:[NSNumber numberWithInteger:UA_SPOOF_SAFARI_MAC] forKey:@"uaspoof"];
                 [appDelegate saveSettings:settings];
             }
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil 
-                                                            message:[NSString stringWithFormat:@"User Agent spoofing enabled.\n\nNote that scripts, active content, and other iOS features may still identify your browser.\n\nFor 'desktop' options, mobile or tablet websites may not work properly."]
-                                                           delegate:nil
-                                                  cancelButtonTitle:@"OK" 
-                                                  otherButtonTitles:nil];
-            [alert show];
+
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:@"User Agent spoofing enabled.\n\nNote that scripts, active content, and other iOS features may still identify your browser.\n\nFor 'desktop' options, mobile or tablet websites may not work properly." preferredStyle:UIAlertControllerStyleAlert];
+            [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil]];
+            [self presentViewController:alert animated:YES completion:NULL];
         }
     } else if (indexPath.section == 4) {
         // DNT
@@ -361,47 +401,26 @@
         } else if (indexPath.row == 1) {
             [settings setObject:[NSNumber numberWithInteger:DNT_HEADER_NOTRACK] forKey:@"dnt"];
             [appDelegate saveSettings:settings];
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil
-                                                            message:[NSString stringWithFormat:@"Onion Browser will now send the 'DNT: 1' header.\n\nNote that because only very new browsers send this preference, this signal could cause you to 'stand out'.\n\nFor more generic-looking anonymous traffic, you may wish to disable this setting."]
-                                                           delegate:nil
-                                                  cancelButtonTitle:@"OK" 
-                                                  otherButtonTitles:nil];
-            [alert show];
         }
     } else if (indexPath.section == 5) {
+        // TLS
         AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+        NSMutableDictionary *settings = appDelegate.getSettings;
 
-        BridgeTableViewController *bridgesVC = [[BridgeTableViewController alloc] initWithStyle:UITableViewStylePlain];
-        [bridgesVC setManagedObjectContext:[appDelegate managedObjectContext]];
-        
-        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:bridgesVC];
-        navController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-        [self presentViewController:navController animated:YES completion:nil];
+        if (indexPath.row == 0) {
+            [settings setObject:[NSNumber numberWithInteger:X_TLSVER_ANY] forKey:@"tlsver"];
+            [appDelegate saveSettings:settings];
+        } else if (indexPath.row == 1) {
+            [settings setObject:[NSNumber numberWithInteger:X_TLSVER_TLS1] forKey:@"tlsver"];
+            [appDelegate saveSettings:settings];
+        } else if (indexPath.row == 2) {
+            [settings setObject:[NSNumber numberWithInteger:X_TLSVER_TLS1_2_ONLY] forKey:@"tlsver"];
+            [appDelegate saveSettings:settings];
+        }
+    } else if (indexPath.section == 6) {
+        BridgeViewController *bridgesVC = [[BridgeViewController alloc] initWithStyle:UITableViewStyleGrouped];
+		[self.navigationController pushViewController:bridgesVC animated:YES];
     }
     [tableView reloadData];
 }
-
-
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
-    if (buttonIndex == 1) {
-        AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
-        NSMutableDictionary *settings = appDelegate.getSettings;
-        
-        if ([[[alertView textFieldAtIndex:0] text] length] == 0) {
-            [settings setValue:@"onionbrowser:home" forKey:@"homepage"]; // DEFAULT HOMEPAGE
-        } else {
-            NSString *h = [[alertView textFieldAtIndex:0] text];
-            if ( (![h hasPrefix:@"http:"]) && (![h hasPrefix:@"https:"]) && (![h hasPrefix:@"onionbrowser:"]) )
-                h = [NSString stringWithFormat:@"http://%@", h];
-            [settings setValue:h forKey:@"homepage"];
-        }
-        [appDelegate saveSettings:settings];
-        [self.tableView reloadData];
-    }
-}
-
-
-
-
-
 @end
